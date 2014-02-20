@@ -11,9 +11,19 @@ const MAX_PROB = 500
 var problems [MAX_PROB]problem
 
 func setup_problems() {
+	// TODO use reflection to populate this automatically
 	problems[1] = problem1
 	problems[2] = problem2
 	problems[3] = problem3
+	problems[4] = problem4
+	problems[5] = problem5
+	problems[6] = problem6
+	problems[7] = problem7
+	problems[8] = problem8
+	problems[9] = problem9
+	problems[10] = problem10
+	problems[11] = problem11
+	problems[12] = problem12
 }
 
 func main() {
