@@ -24,6 +24,8 @@ func setup_problems() {
 	problems[10] = problem10
 	problems[11] = problem11
 	problems[12] = problem12
+	problems[13] = problem13
+	problems[14] = problem14
 }
 
 func main() {
