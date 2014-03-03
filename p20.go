@@ -258,3 +258,107 @@ func problem14() string {
 	return itoa(maxChainStart) 
 }
 
+func prod(low, high int) *big.Int {
+	product := big.NewInt(int64(high))
+	for i := low; i < high; i++ {
+		product.Mul(product, big.NewInt(int64(i)))
+	}
+	return product
+}
+
+// n choose r (r <= c, not checked)
+func nCr(n, r int) *big.Int {
+	i, j := Min2i(r, n-r), Max2i(r, n-r)
+	// nCr =     n! / (r! (n-r)!)
+	//     = (i+j)! / (i! j!)
+	//     = (i+j) . (i+j-1) ... (i+1) / i!
+	num, denom := prod(i+1, i+j), prod(1, i)
+	return num.Quo(num, denom)
+}
+
+// effectively, find 40 choose 20
+func problem15() string {
+	return nCr(40,20).String()
+}
+
+func digitSum(digitStr string) int {
+	ZERO_CHAR := int('0')
+	sum := 0
+	for _, c := range digitStr {
+		sum += int(c) - ZERO_CHAR
+	}
+	return sum
+}
+
+func bigExp(base, exp int) *big.Int {
+	return big.NewInt(0).Exp(big.NewInt(int64(base)), big.NewInt(int64(exp)), big.NewInt(0))
+}
+
+// find the sum of digits of 2^1000
+func problem16() string {
+	return itoa(digitSum(bigExp(2, 1000).String()))
+}
+
+func sumMax(grid [][]int64) int64 {
+	for row := len(grid) - 2; row >= 0; row-- {
+		for col := range grid[row] {
+			grid[row][col] += Max2l(grid[row+1][col], grid[row+1][col+1])
+		}
+	}
+
+	return grid[0][0]
+}
+
+func problem18() string {
+	return i64toa(sumMax(ReadGrid("data/p18.txt")))
+}
+
+// count the number of 1st of months were Sundays from 1/1/1901 to 31/12/2000
+func problem19() string {
+	numDaysInMonth := []int{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+	
+	// if the first day of the year is Sunday, determine the day of week for the first of each month
+	var dayOfWkOffset [12]int
+	dayOfWkOffset[0] = 0
+	for i := 1; i < 12; i++ {
+		dayOfWkOffset[i] = (dayOfWkOffset[i-1] + numDaysInMonth[i]) % 7
+	}
+
+	var numSundays [7]int
+	for i := 0; i < 12; i++ {
+		numSundays[dayOfWkOffset[i]]++
+	}
+
+	// adjust for leap years
+	for i := 2; i < 12; i++ {
+		dayOfWkOffset[i] = (dayOfWkOffset[i] + 1) % 7
+	}
+
+	var numSundaysLeap [7]int
+	for i := 0; i < 12; i++ {
+		numSundaysLeap[dayOfWkOffset[i]]++
+	}
+
+	// first day of 1901 is Wed (day = 3)
+	countSundays := 0
+	for day, year := 3, 1901; year <= 2000; day, year = (day + 365) % 7, year + 1 {
+		isLeapYear := (year % 4) == 0
+		if isLeapYear {
+			countSundays += numSundaysLeap[day]
+			day++
+		} else {
+			countSundays += numSundays[day]
+		}
+	}
+
+	return itoa(countSundays)
+}
+
+// find the sum of the digits in 100!
+func problem20() string {
+	return itoa(digitSum(prod(1, 100).String()))
+}
+
+func problem67() string {
+	return i64toa(sumMax(ReadGrid("data/p67.txt")))
+}

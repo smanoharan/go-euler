@@ -26,6 +26,12 @@ func setup_problems() {
 	problems[12] = problem12
 	problems[13] = problem13
 	problems[14] = problem14
+	problems[15] = problem15
+	problems[16] = problem16
+	problems[18] = problem18
+	problems[19] = problem19
+	problems[20] = problem20
+	problems[67] = problem67
 }
 
 func main() {
