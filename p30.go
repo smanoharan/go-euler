@@ -1,5 +1,10 @@
 package main
 
+import (
+	"sort"
+	"strings"
+)
+
 func divisorSum(max int) []int {
 	divSum := make([]int, max)
 	for d := 1; d < max; d++ {
@@ -7,7 +12,7 @@ func divisorSum(max int) []int {
 			divSum[m] += d
 		}
 	}
-
+	
 	return divSum
 }
 
@@ -23,6 +28,28 @@ func problem21() string {
 	}
 	
 	return itoa(amiSum)
+}
+
+func problem22() string {
+	line := ReadAllLines("data/p22.txt")[0] // all content is in one line
+	names := strings.Split(line, ",")
+	sort.Strings(names)
+
+	nameScore := func(name string) int64 {
+		sum := int64(0)
+		for _, c := range name {
+			sum += int64(int(c) - int('A') + 1)
+		}
+		return sum
+	}
+
+	score := int64(0)
+	for i, name := range names {
+		name = strings.Replace(name, "\"", "", 2)
+		score += nameScore(name) * int64(i+1)				
+	}
+
+	return i64toa(score)
 }
 
 func problem23() string {
