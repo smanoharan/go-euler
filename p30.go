@@ -89,6 +89,14 @@ func problem23() string {
 	return itoa(sum)
 }
 
+func problem24() string {
+	p := NewPermutation(10)
+	for i := 1; i < 1000000; i++ {
+		p.NextPermutation()
+	}
+	return p.ToString()
+}
+
 func problem25() string {
 	i, max := 1, bigExp(10, 999)
 	for tmp, cur, next := NewBig(1), NewBig(1), NewBig(1); cur.Cmp(max) == -1 ; i++ {
@@ -98,6 +106,63 @@ func problem25() string {
 	}
 
 	return itoa(i)
+}
+
+func Divide(numer, denom int) (quot, rem int) {
+	quot = numer / denom
+	rem = numer - (denom * quot)
+	return
+}
+
+func RecurrenceLength(numer, denom int) int {
+	visRem := NewBitSet(denom + 2)
+	_, rem := Divide(numer, denom)
+
+	for i := 0; rem > 0; i++ {
+		if visRem.Get(rem) { return i } // reached the same remainder twice, so recurrence length is known.
+		visRem.Set(rem)
+
+		_, rem = Divide(rem * 10, denom)
+	}
+
+	// reached here: so rem == 0 ; so not a recurring fraction
+	return 0
+}
+
+func problem26() string {
+	maxD, maxLen := 0, 0
+	for d := 1; d < 1000; d++ {
+		dLen := RecurrenceLength(1, d)
+		if maxLen < dLen {
+			maxD, maxLen = d, dLen
+		}
+	}
+	return itoa(maxD)
+}
+
+func problem27() string {
+	// max { a^2 + an + b } where |a|, |b| < 1000 is < { 1000^2 + 1000n + 1000 }.
+	// when n = 1000, the above expression is divisible by 1000, so n < 1000
+	// so max { ... } is 2 * 1000^2 + 1000 = 2001000
+	const max = 2001002
+	composites := BuildPrimeSieve(max)
+
+	maxA, maxB, maxLen := 0, 0, 0
+	for b := -999; b < 1000; b++ {
+		if composites.Get(b) { continue } // the first term (when n=0) is 0^2 + 0*a + b = b.
+		for a := -999; a < 1000; a++ {
+			n := 1
+			for (n*n + a*n + b > 0) && !composites.Get(n*n + a*n + b) { 
+				n++ 
+			}
+
+			if n > maxLen { 
+				maxA, maxB, maxLen = a, b, n 
+			}
+		}
+	}
+
+	return itoa(maxA*maxB)
 }
 
 func problem28() string {
