@@ -148,7 +148,7 @@ func problem27() string {
 	composites := BuildPrimeSieve(max)
 
 	maxA, maxB, maxLen := 0, 0, 0
-	for b := -999; b < 1000; b++ {
+	for b := 2; b < 1000; b++ { // negative b will not be prime (see next line)
 		if composites.Get(b) { continue } // the first term (when n=0) is 0^2 + 0*a + b = b.
 		for a := -999; a < 1000; a++ {
 			n := 1
