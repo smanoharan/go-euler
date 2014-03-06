@@ -179,3 +179,21 @@ func problem28() string {
 	s := 4*(4*sqSum(n) - 7*linSum(n) + 4*n) - 3 // -3 since 1 is counted 4 times (but only occurs once)
 	return itoa(s)
 }
+
+func problem30() string {
+	fifthPow := make([]int, 10)
+	for i := 0; i < 10; i++ {
+		isq := i*i
+		fifthPow[i] = isq * isq * i
+	}
+
+	sumOfAll := 0
+	for i := 2; i < 700000; i++ {
+		sumOfD := 0
+		for _, d := range toDigits(i) {
+			sumOfD += fifthPow[d]
+		}
+		if sumOfD == i { println(i); sumOfAll += i }
+	}
+	return itoa(sumOfAll)
+}
