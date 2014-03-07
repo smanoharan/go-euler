@@ -263,6 +263,16 @@ func problem16() string {
 	return itoa(digitSum(bigExp(2, 1000).String()))
 }
 
+func problem17() string {
+	s1to9 := len("one"+"two"+"three"+"four"+"five"+"six"+"seven"+"eight"+"nine")
+	s11to19 := len("eleven"+"twelve"+"thirteen"+"fourteen"+"fifteen"+"sixteen"+"seventeen"+"eighteen"+"nineteen")
+	s20to90by10 := len("twenty"+"thirty"+"forty"+"fifty"+"sixty"+"seventy"+"eighty"+"ninety")
+	s1to99 := s1to9 + len("ten") + s11to19 + (s20to90by10 * 10) + (s1to9 * 8)
+	s1to999 := (10 * s1to99) + ((s1to9 + 9*len("hundred"+"and")) * 100) - 9*len("and") // e.g. 200 has no 'and'
+	s1to1000 := s1to999 + len("one"+"thousand")
+	return itoa(s1to1000)
+}
+
 func sumMax(grid [][]int64) int64 {
 	for row := len(grid) - 2; row >= 0; row-- {
 		for col := range grid[row] {

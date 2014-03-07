@@ -180,6 +180,89 @@ func problem28() string {
 	return itoa(s)
 }
 
+func problem29() string {
+	// consider the prime-decomposition of each number upto 100.
+	// an upper bound on the number of factors is 4 (2*3*5*7 = 210 > 100).
+	// so an array of size 8 can hold prime decomposition of all such numbers (each pair of elem is prime, exponent)
+	// by only looking at positive numbers and storing the prime factors in order, we get a unique decomposition for each number.
+	const max = 100
+	const size = 9 // first index stores the count of factors
+
+	var primeDecomp [max+1][size]int
+
+	isComposite := NewBitSet(max+1)
+	var largestFactor [2*max+2]int // packed: (largestFactor, count)
+
+	for p := 2; p <= max; p++ {
+		if !isComposite.Get(p) {
+			for q,f := 2*p,2; q <= max; q,f = q+p,f+1 {
+				isComposite.Set(q)
+				largestFactor[q*2] = p
+				largestFactor[q*2 + 1] = f
+			}
+		}
+	}
+
+	for p := 2; p <= max; p++ {
+		if isComposite.Get(p) {
+			// find base to copy decomposition off
+			b := largestFactor[p*2 + 1]
+			lastFac := largestFactor[p*2]
+			foundLastFac := false
+			pdbn := primeDecomp[b][0]
+
+			// copy the prime decomposition of the base
+			// alter it for the last factor
+			for i := 0; i < pdbn; i++ {
+				fac := primeDecomp[b][1+2*i]
+				exp := primeDecomp[b][2+2*i]
+				primeDecomp[p][1+2*i] = fac
+				if fac == lastFac {
+					primeDecomp[p][2+2*i] = exp + 1
+					foundLastFac = true
+				} else {
+					primeDecomp[p][2+2*i] = exp 
+				}
+			}
+
+			if !foundLastFac {
+				primeDecomp[p][1+2*pdbn] = lastFac
+				primeDecomp[p][2+2*pdbn] = 1
+				primeDecomp[p][0] = pdbn + 1
+			} else {
+				primeDecomp[p][0] = pdbn
+			}
+		} else {
+			primeDecomp[p][0] = 1
+			primeDecomp[p][1] = p
+			primeDecomp[p][2] = 1
+		}
+	}
+
+	count := 0
+	visited := make(map[[size]int]bool) 	
+	for a := 2; a <= 100; a++ {
+		pdA := primeDecomp[a]
+		for b := 2; b <= 100; b++ {
+			var pdAB [size]int
+			pi := pdA[0]
+			pdAB[0] = pi
+			for i := 0; i < pi; i++ {
+				pdAB[1+2*i]	= pdA[1+2*i]
+				pdAB[2+2*i]	= pdA[2+2*i]*b
+			}
+
+			if _, exists := visited[pdAB]; !exists {
+				count++
+				visited[pdAB] = true
+			}
+
+		}
+	}
+
+	return itoa(count)
+}
+
 func problem30() string {
 	fifthPow := make([]int, 10)
 	for i := 0; i < 10; i++ {

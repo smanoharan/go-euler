@@ -28,6 +28,7 @@ func setup_problems() {
 	problems[14] = problem14
 	problems[15] = problem15
 	problems[16] = problem16
+	problems[17] = problem17
 	problems[18] = problem18
 	problems[19] = problem19
 	problems[20] = problem20
@@ -39,6 +40,7 @@ func setup_problems() {
 	problems[26] = problem26
 	problems[27] = problem27
 	problems[28] = problem28
+	problems[29] = problem29
 	problems[30] = problem30
 	problems[31] = problem31
 	problems[32] = problem32
