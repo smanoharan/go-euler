@@ -244,3 +244,102 @@ func problem37() string {
 	return itoa(sum)
 }
 
+func problem38() string {
+	
+	toDigitMask := func(i int) (int, bool, int) {
+		mask, base := 0, 1
+		for _, d := range toDigits(i) {
+			dm := (1 << uint(d))
+			if (dm == 1) || ((mask & dm) > 0) {
+				return 0, false, 0 // can't create mask, has repeated digits or a zero
+			}
+			mask |= dm
+			base *= 10
+		}
+		return (mask >> 1), true, base // don't need a bit for zero
+	}
+	
+	// n can be at most 9 (as the pandigital multiple is at most 9 digits long)
+	// the multiplicand is at most 4 digits long
+	max := 0
+	for m := 1; m < 10000; m++ {
+		val, mMask := 0, 0
+	
+		for n := 1; n <= 9; n++ {
+			mnMask, mnValid, base := toDigitMask(m*n)
+			val = (val*base) + (m*n)
+			if (!mnValid) || ((mMask & mnMask) > 0) { break }
+			
+			mMask |= mnMask
+			if mMask == 0x1ff { // i.e. all 9 digits
+				// this is a pandigital
+				max = Max2i(max, val)
+				break
+			}
+		}
+	}
+
+	return itoa(max)
+}
+
+func problem39() string {
+	// let a,b,c be the sides of the triangle, with a <= b <= c
+	const pMax = 1000
+	var numTris [pMax+1]int
+
+	max, maxP := 0, 0
+	for a := 1; a <= 333; a++ {
+		maxB := pMax - a / 2
+		for b := a; b <= maxB; b++ {
+			maxC := pMax - a - b
+			for c := b; c <= maxC; c++ {
+				if (a*a + b*b == c*c) {
+					p := a + b + c
+					numTris[p]++
+
+					if numTris[p] > max {
+						max, maxP = numTris[p], p
+					}
+				}
+			}
+		}
+	}
+
+	return itoa(maxP) 
+}
+
+func problem40() string {
+	
+	findNthDigitOfNumber := func(i, n int) int { // n is 0-based
+		// toDigits performs log_10(i) divisions
+		// could be done faster, but is only called a handful of times
+		digits := toDigits(i)
+		return digits[len(digits) - (n+1)]
+	}
+
+	dOf := func(n int) int {
+		for base, numDigits := 1, 1; true; base, numDigits = base * 10, numDigits + 1 {
+			cdi := base * 9 * numDigits
+
+			if cdi >= n {
+				// the relevant number lies in between base and base * 10
+				number := n / numDigits
+				if (number * numDigits != n) { number++ }
+				return findNthDigitOfNumber(number + base - 1, (n-1) % numDigits)
+			} else {
+				n  -= cdi
+			}
+		}
+
+		return 0
+	}
+
+	return itoa(dOf(1) * dOf(10) * dOf(100) * dOf(1000) * dOf(10*1000) * dOf(100*1000) * dOf(1000*1000))
+}
+
+
+
+
+
+
+
