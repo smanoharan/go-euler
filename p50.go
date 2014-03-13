@@ -1,5 +1,7 @@
 package main
 
+import "sort"
+
 func isPanDigital(i int) bool {
 	mask := 0
 	for i > 0 {
@@ -99,6 +101,186 @@ func problem43() string {
 	}
 	
 	return i64toa(sum)
+}
+
+func problem44() string {
+	
+	const max = 100000000
+	isPenta := NewBitSet(max+1)
+
+	count := 0
+	for d,p := 4,1; p < max; d,p = d+3,p+d {
+		isPenta.Set(p)
+		count++
+	}
+	
+	penta := func(n int) int {
+		return n*(3*n - 1) / 2 
+	}
+
+	minD := max
+	for pi := 1; pi < count; pi++ {
+		ni := penta(pi)
+		for pj,nj := pi+1,penta(pi+1); (nj - ni < minD) && (nj + ni) < max; pj,nj = pj+1,penta(pj+1) {
+			if isPenta.Get(nj - ni) && isPenta.Get(nj + ni) {
+				minD = nj - ni
+				break
+			}
+		}
+	}
+	
+	return itoa(minD)
+}
+
+func problem45() string {
+	// iterate thru hex numbers (which are already triangle numbers)
+	i := int64(144) // last number was hexNum(143)
+	for !IsPentaNum(HexNum(i)) { i++ }
+	return i64toa(HexNum(i))
+}
+
+
+func problem46() string {
+
+	sieveMax := 1000*1000 // 100*1000*1000 
+	sieve := NewBitSet(sieveMax)
+
+	for p := 2; p < sieveMax; p++ {
+		if !sieve.Get(p) {
+			for q := 2*p; q < sieveMax; q+=p {
+				sieve.Set(q)
+			}
+		} else if (p & 1) == 1 {
+			found := false
+			for d := 1; p - 2*d*d > 1; d++ {
+				if !sieve.Get(p - 2*d*d) { 
+					found = true
+					break
+				}
+			}
+
+			if !found { return itoa(p) }
+		}
+	}
+
+	return "Not found. Increase sieveMax"
+}
+
+func problem47() string {
+	const max = 1000*1000
+	numFactors := make([]int, max)
+	
+	for p := 2; p < max; p++ {
+		if numFactors[p] == 0 {
+			for q := 2*p; q < max; q+=p {
+				numFactors[q]++
+			}
+		} else if p > 4 && 
+				numFactors[p] == 4 && 
+				numFactors[p-1] == 4 && 
+				numFactors[p-2] == 4 && 
+				numFactors[p-3] == 4 {
+			return itoa(p-3)
+		}
+	}
+
+	return "Not found. Increase max"
+}
+
+func problem48() string {
+	const mod = int64(10*1000)*int64(1000*1000)
+
+	expMod := func(base, exp int) int64 {
+		base64 := int64(base)
+		prod := base64
+		for i := 1; i < exp; i++ { 
+			prod = (prod * base64) % mod 
+		}
+		return prod
+	}
+
+	sum := int64(0)
+	for i := 1; i <= 1000; i++ {
+		sum = (sum + expMod(i,i)) % mod
+	}
+
+	return i64toa(sum)
+}
+
+func problem49() string {
+	
+	toKey := func(i int) int {
+		d1 := i / 1000
+		i -= d1 * 1000
+		d2 := i / 100
+		i -= d2 * 100
+		d3 := i / 10
+		d4 := i - d3*10
+		
+		ds := sort.IntSlice([]int{d1,d2,d3,d4})
+		ds.Sort()
+		return ds[0]*1000 + ds[1]*100 + ds[2]*10 + ds[3]
+	}
+
+	const max = 10000
+	isComposite := BuildPrimeSieve(max+1)
+	var perms [max][]int
+
+	for i := 1000; i < max; i++ {
+		if !isComposite.Get(i) {
+
+			iKey := toKey(i)
+			if perms[iKey] == nil {
+				perms[iKey] = []int{i}
+			} else {
+				for _, j := range perms[iKey] {
+					k := 2*i - j
+					if k < max && !isComposite.Get(k) && iKey == toKey(k) {
+						if toKey(i) != 1478 {
+							return itoa(j) + itoa(i) + itoa(k) 
+						}
+					}
+				}
+
+				perms[iKey] = append(perms[iKey], i)
+			}
+		}
+	}
+		
+	return "Error. Not Found."
+}
+
+func problem50() string {
+	const max = 1000000
+
+	var primes [max]int
+	numPrimes := 0
+	appendPrime := func(prime int) {
+		primes[numPrimes] = prime
+		numPrimes++
+	}
+
+	isComposite := IteratePrimes(max+1, appendPrime)
+
+	maxJ, P := 0, -1
+	for i := 0; i < numPrimes; i++ {
+		maxj := Min2i(max, numPrimes - i)
+		if maxj < maxJ { break }
+
+		curSum := 0
+		for j := 0; j < maxj; j++ {
+			pj := primes[i+j]
+			curSum += pj
+			if curSum >= max { break }
+			if !isComposite.Get(curSum) {
+				if j+1 > maxJ {
+					maxJ, P = j+1, curSum
+				}
+			}
+		}
+	}
+
+	return itoa(P)
 }
 
 
