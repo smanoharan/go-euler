@@ -333,6 +333,3 @@ func problem20() string {
 	return itoa(digitSum(prod(1, 100).String()))
 }
 
-func problem67() string {
-	return i64toa(sumMax(ReadGrid("data/p67.txt")))
-}
