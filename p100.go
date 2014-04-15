@@ -52,4 +52,21 @@ func problem97() string {
 	return i64toa(prime)
 }
 
+func problem99() string {
+	
+	max := float64(0)
+	maxLN := 0
 
+	lines := ReadAllLines("data/p99.txt")
+	for i:=0; i<len(lines); i++ {
+		parts := splitByComma(lines[i])
+		base, exp := atoi(parts[0]), atoi(parts[1])
+		curVal := logExp(base, exp)
+		if curVal > max {
+			max = curVal
+			maxLN = i+1 // 1-based line numbers
+		}
+	}
+
+	return itoa(maxLN)
+}

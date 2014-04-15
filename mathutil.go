@@ -45,6 +45,11 @@ func itoa(i int) string {
 	return strconv.Itoa(i) 
 }
 
+func atoi(s string) int {
+	i, _ := strconv.Atoi(s)
+	return i
+}
+
 func i64toa(i int64) string {
 	return strconv.FormatInt(i, 10)
 }
@@ -60,3 +65,13 @@ func SqrtU64(i uint64) uint64 {
 func PowI64(base, exp int64) int64 {
 	return int64(math.Pow(float64(base), float64(exp))) 
 }
+
+func logn(x float64) float64 {
+	return math.Log(x)
+}
+
+func logExp(base, exp int) float64 {
+	// returns log(base ^ exp)
+	return float64(exp) * logn(float64(base))
+}
+
