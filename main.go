@@ -65,15 +65,20 @@ func setup_problems() {
 	
 	problems[52] = problem52
 	problems[53] = problem53
+
 	problems[55] = problem55
 	problems[56] = problem56
+	problems[57] = problem57
 	problems[58] = problem58
 	problems[59] = problem59
+	problems[60] = problem60
 	
 	problems[62] = problem62
 	problems[63] = problem63
 	problems[67] = problem67
 	problems[69] = problem69
+
+	problems[74] = problem74
 
 	problems[92] = problem92
 	problems[97] = problem97

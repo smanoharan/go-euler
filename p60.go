@@ -99,6 +99,37 @@ func problem56() string {
 	return itoa(maxDsum)
 }
 
+func gcd(a,b int) int {
+	if a == 0 { return b }
+	if b == 0 { return a } 
+	if a < b { return gcd(b % a, a) }
+	return gcd(a % b, b)
+}
+
+func problem57() string {
+	hasMoreDigits := func(numer, denom, powOf10 *big.Int) bool {
+		ten := NewBig(10)
+		for powOf10.Cmp(denom) == -1 {
+			powOf10.Mul(powOf10, ten)
+		}
+		
+		return powOf10.Cmp(numer) == -1
+	}
+
+	numer, denom, powOf10 := NewBig(3), NewBig(2), NewBig(1)
+	count := 0
+	for i := 1; i < 1000; i++ {
+		
+		// n,d = n+d+d, n+d
+		numer.Add(numer, denom)
+		denom.Add(numer, denom)
+		numer, denom = denom, numer
+		
+		if hasMoreDigits(numer, denom, powOf10) { count++ }
+	}
+	return itoa(count)
+}
+
 func problem58() string {
 	
 	x := 2   
@@ -172,12 +203,98 @@ func problem59() string {
 	_, sum := xorDecode(103, 111, 100)
 	println(string(decoded))
 
-
-//	max := 0xffffff // 256*256*256 - 1
-	//for ijk := uint(0); ijk <= max; ijk++ {
-//		i, j, k := ijk << 16
-//		print(i,j,k)
-//	}
-
 	return strconv.Itoa(sum)
 }
+
+func problem60() string {
+	type IPv struct {
+		prime int
+		pow10 int 
+	}
+
+	type ConcatGroup []IPv
+
+	const max, maxP = 10*1000, 10*1000*1000 // just a guess
+	isComposite := BuildPrimeSieve(maxP)
+	primes := make([]IPv, 0, max/5)
+	for i,j := 2,10; i < max; i++ {
+		if i >= j { j *= 10 }
+		if !isComposite.Get(i) {
+			primes = append(primes, IPv{i,j}) 
+		}
+	}
+
+	isPrime := func(i int) bool {
+		if i < maxP { return !isComposite.Get(i) }
+		return IsMillerRabinPrime(i)
+	}
+
+	isConcatPrime := func(i, j IPv) bool {
+		cji := j.prime * i.pow10 + i.prime
+		cij := i.prime * j.pow10 + j.prime
+		return isPrime(cij) && isPrime(cji)
+	}
+
+	// build prime pairs
+	np := len(primes)
+	sets := make([]ConcatGroup, 0, np/3)
+	for i := 0; i < np; i++ {
+		for j := i+1; j < np; j++ {
+			pi, pj := primes[i], primes[j]
+			if isConcatPrime(pi, pj) {
+				cg := make([]IPv, 2)
+				cg[0], cg[1] = pi, pj
+				sets = append(sets, cg)
+			}
+		}
+	}
+
+	// build triples, quads and quintuples
+	for t := 3; t <= 5; t++ {
+		ns := len(sets)
+		newSets := make([]ConcatGroup, 0, ns/3)
+		
+		for s := 0; s < ns; s++ {
+			ss := sets[s]
+			nss := len(ss)
+			for p := 0; p < np; p++ {
+				pp := primes[p]
+				if pp.prime <= ss[nss-1].prime { continue }
+				
+				found := true
+				for i := 0; i < nss; i++ {
+					if !isConcatPrime(pp, ss[i]) { 
+						found = false
+						break
+					}
+				}
+
+				if found {
+					newbase := make([]IPv, nss, nss+1)
+					copy(newbase, ss)
+					newbase = append(newbase, pp)
+					newSets = append(newSets, newbase)
+				}
+			}
+		}
+
+		sets = newSets
+	}
+
+	minSum := -1
+	for i := 0; i < len(sets); i++ {
+		arr := sets[i]
+		sumP := 0
+		for j := 0; j < len(arr); j++ {
+			sumP += arr[j].prime
+		}
+
+		if minSum < 0 || sumP < minSum {
+			minSum = sumP
+		}
+	}
+
+	return itoa(minSum)
+}
+
+
