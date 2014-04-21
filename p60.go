@@ -55,6 +55,200 @@ func problem53() string {
 	return itoa(count)
 }
 
+type Card struct {
+	rank, suit int // 2-14, 0-3 respectively.
+}
+
+type Cards []Card
+
+// for sorting
+func (c Cards) Len() int { return len(c) }
+func (c Cards) Swap(i, j int) { c[i], c[j] = c[j], c[i] }
+func (c Cards) Less(i, j int) bool { return c[i].rank < c[j].rank || (c[i].rank == c[j].rank && c[i].suit < c[j].suit) }
+
+func problem54() string {
+	suits := []byte{' ','C','H','D','S'}
+	ranks := []byte{' ','2','3','4','5','6','7','8','9','T','J','Q','K','A'}
+
+	// all util functions (below) assume hand is sorted by rank
+	combineSubscore := func(cards ...Card) int {
+		score := 0;
+		for i := 0; i < len(cards); i++ {
+			score *= 100
+			score += cards[i].rank
+		}
+		return score
+	}
+
+	isSameRank := func(cards []Card) bool {
+		for i := 1; i < len(cards); i++ {
+			if cards[i].rank != cards[i-1].rank { return false }
+		}
+		return true
+	}
+
+	isFlush := func(cards []Card) (bool,int) {
+		for i := 1; i < len(cards); i++ {
+			if cards[i].suit != cards[i-1].suit { return false, -1 }	
+		}
+		return true, cards[0].rank
+	}
+
+	isStraight := func(cards []Card) (bool, int) {
+		for i := 1; i < 5; i++ {
+			if cards[i].rank != cards[i-1].rank + 1 { return false, -1 }
+		}
+		return true, cards[0].rank
+	}
+
+	isStraightFlush := func(cards []Card) (bool,int) {
+		if isf, _ := isFlush(cards); isf {
+			return isStraight(cards)
+		}
+		return false, -1
+	}
+	
+	isRoyalFlush := func(cards []Card) (bool,int) {
+		if ranks[cards[0].rank] == 'T' { 
+			return isStraightFlush(cards)
+		}
+		return false, -1
+	}
+
+	isFourOfAKind := func(cards []Card) (bool,int) {
+		if isSameRank(cards[1:]) {
+			return true, combineSubscore(cards[1], cards[0]) 
+		} else if isSameRank(cards[0:4]) {
+			return true, combineSubscore(cards[0], cards[4])
+		}
+		return false, -1
+	}
+
+	isFullHouse := func(cards []Card) (bool,int) {
+		// assume 5 cards
+		if isSameRank(cards[0:3]) && isSameRank(cards[3:]) {
+			return true, combineSubscore(cards[0], cards[3])
+		} else if isSameRank(cards[0:2]) && isSameRank(cards[2:]) {
+			return true, combineSubscore(cards[2], cards[0])
+		}
+		return false, -1
+	}
+
+	isThreeOfAKind := func(cards []Card) (bool,int) {
+		if isSameRank(cards[0:3]) {
+			return true, combineSubscore(cards[0], cards[4], cards[3])
+		} else if isSameRank(cards[1:4]) {
+			return true, combineSubscore(cards[1], cards[4], cards[0])
+		} else if isSameRank(cards[2:]) {
+			return true, combineSubscore(cards[2], cards[1], cards[0])
+		}
+		return false, -1
+	}
+
+	isTwoPairs := func(cards []Card) (bool,int) {
+		if isSameRank(cards[0:2]) {
+			if isSameRank(cards[2:4]) {
+				return true, combineSubscore(cards[2], cards[0], cards[4])
+			} else if isSameRank(cards[3:]) {
+				return true, combineSubscore(cards[3], cards[0], cards[2])
+			}
+			return false, -1
+		} else if isSameRank(cards[1:3]) && isSameRank(cards[3:]) {
+			return true, combineSubscore(cards[3], cards[1], cards[0])
+		}
+		return false, -1
+	}
+
+	isOnePair := func(cards []Card) (bool, int) {
+		if isSameRank(cards[0:2]) {
+			return true, combineSubscore(cards[0], cards[4], cards[3], cards[2])
+		} else if isSameRank(cards[1:3]) {
+			return true, combineSubscore(cards[1], cards[4], cards[3], cards[0])
+		} else if isSameRank(cards[2:4]) {
+			return true, combineSubscore(cards[2], cards[4], cards[1], cards[0])
+		} else if isSameRank(cards[3:]) {
+			return true, combineSubscore(cards[3], cards[2], cards[1], cards[0])
+		}
+		return false, -1
+	}
+
+	// expects exactly 5 cards, in sorted (by rank) order
+	scoreHand := func(hand []Card) (int,int) {
+		score := 10
+
+		// check for Royal Flush
+		if b,s := isRoyalFlush(hand); b { return score,s }
+		score--
+
+		if b,s := isStraight(hand); b { return score,s }
+		score--
+
+		if b,s := isFourOfAKind(hand); b { return score,s }
+		score--
+
+		if b,s := isFullHouse(hand); b { return score,s }
+		score--
+
+		if b,s := isFlush(hand); b { return score,s }
+		score--
+
+		if b,s := isStraight(hand); b { return score,s }
+		score--
+
+		if b,s := isThreeOfAKind(hand); b { return score,s }
+		score--
+
+		if b,s := isTwoPairs(hand); b { return score,s }
+		score--
+
+		if b,s := isOnePair(hand); b { return score,s }
+		score--
+
+		return score, combineSubscore(hand[4], hand[3], hand[2], hand[1], hand[0])
+	}
+
+	toCard := func(s string) Card {
+		ri,si := 0,0
+		rc,sc := s[0], s[1]
+
+		for i, s := range suits {
+			if s == sc { si = i }
+		}
+
+		for i, r := range ranks {
+			if r == rc { ri = i }
+		}
+
+		return Card{ri,si}
+	}
+
+
+	lines := ReadAllLines("data/p54.txt")
+	count:= 0
+	for _, line := range lines {
+		if len(line) == 0 { continue }
+
+		cardStrs := splitBySpace(line)
+		cards := make([]Card, 10)
+		for i,c := range cardStrs {
+			cards[i] = toCard(c)
+		}
+
+		hand1 := Cards(cards[0:5])
+		sort.Sort(hand1)
+
+		hand2 := Cards(cards[5:])
+		sort.Sort(hand2)
+
+		s1,ss1 := scoreHand(hand1)
+		s2,ss2 := scoreHand(hand2)
+
+		if s1 > s2 || (s1 == s2 && ss1 > ss2) { count++ }
+	}
+	
+	return itoa(count)
+}
+
 func problem55() string {
 
 	reverseBig := func(b *big.Int) *big.Int {
