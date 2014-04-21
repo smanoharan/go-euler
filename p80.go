@@ -45,3 +45,24 @@ func problem74() string {
 	return itoa(count)
 }
 
+func problem76() string {
+	const max = 100
+	arr := make([][]int, max+1)
+	for i := 0; i <= max; i++ {
+		arr[i] = make([]int, max+1)
+	}
+
+	// there is only one way to write any number (>=2) as a sum of 1s
+	arr[1][0] = 1
+	arr[1][1] = 1
+	for j := 2; j <= max; j++ { arr[1][j] = 1 }
+
+	for i := 2; i <= max; i++ {
+		for j := 0; j < i; j++ { arr[i][j] = arr[i-1][j] }
+		for j := i; j <= max; j++ {
+			arr[i][j] = arr[i-1][j] + arr[i][j-i] 
+		}
+	}
+
+	return itoa(arr[max][max] - 1) // exclude the single number sum
+}

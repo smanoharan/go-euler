@@ -1,5 +1,7 @@
 package main
 
+import "math"
+
 func problem62() string {
 	toCanonOrder := func(c uint64) uint64 {
 		
@@ -109,6 +111,41 @@ func problem69() string {
 	}
 	
 	return itoa(maxN)
+}
+
+func problem70() string {
+	const max = 10*1000*1000
+	pf := ToDistinctPrimeFactors(max)
+	
+	isPermutation := func(i, j int64) bool {
+		digits := make([]int, 10)
+		for ; i > 0; i /= 10 {
+			digits[i % 10]++
+		}
+		
+		for ; j > 0; j /= 10 {
+			k := j % 10
+			digits[k]--
+			if digits[k] < 0 { return false }
+		}
+		
+		for i := 0; i < 10; i++ {
+			if digits[i] != 0 { return false } 
+		}
+
+		return true
+	}
+
+	minPhi, minN := float64(1), float64(max)
+	for i := 2; i < max; i++ {
+		fi := float64(i)
+		phi := Phi(i, max, pf)
+		if (fi * minPhi < phi * minN) && isPermutation(int64(i), int64(math.Floor(phi+0.5))) {
+			minPhi, minN = phi, fi
+		}
+	}
+
+	return itoa(int(math.Floor(minN+0.5)))
 }
 
 func problem243() string {
