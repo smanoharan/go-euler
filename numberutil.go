@@ -49,4 +49,10 @@ func IsHexNum(n int64) bool {
 	return isSq && (((det+1) & 3) == 3)
 }
 
-
+// assumes non-negative a,b
+func gcd(a,b int) int {
+	if a == 0 { return b }
+	if b == 0 { return a } 
+	if a < b { return gcd(b % a, a) }
+	return gcd(a % b, b)
+}

@@ -1,5 +1,20 @@
 package main
 
+func problem71() string {
+	const max = 1000*1000
+	a, b := 2, 7 // 2/7 < 3/7
+	for d := max; d > 0; d-- {
+		if d == 7 { continue }
+		i, t := 3*d / 7, int(int64(d)*int64(a) / int64(b))
+		for i > t && gcd(i,d) != 1 { i-- }
+		if i > t { 
+			a,b = i,d 
+			println(a, b)
+		}
+	}
+	return itoa(a)
+}
+
 func problem74() string {
 
 	fac := make([]int, 10)

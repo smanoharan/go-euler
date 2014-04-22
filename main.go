@@ -78,6 +78,7 @@ func setup_problems() {
 	problems[67] = problem67
 	problems[69] = problem69
 	problems[70] = problem70
+	problems[71] = problem71
 
 	problems[74] = problem74
 	problems[76] = problem76
@@ -88,6 +89,8 @@ func setup_problems() {
 	problems[97] = problem97
 	problems[99] = problem99
 	
+	problems[112] = problem112
+	problems[206] = problem206
 	problems[243] = problem243
 }
 

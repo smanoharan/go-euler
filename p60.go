@@ -293,12 +293,6 @@ func problem56() string {
 	return itoa(maxDsum)
 }
 
-func gcd(a,b int) int {
-	if a == 0 { return b }
-	if b == 0 { return a } 
-	if a < b { return gcd(b % a, a) }
-	return gcd(a % b, b)
-}
 
 func problem57() string {
 	hasMoreDigits := func(numer, denom, powOf10 *big.Int) bool {
