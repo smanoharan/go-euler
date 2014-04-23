@@ -1,5 +1,7 @@
 package main
 
+import "math"
+
 func problem71() string {
 	const max = 1000*1000
 	a, b := 2, 7 // 2/7 < 3/7
@@ -13,6 +15,18 @@ func problem71() string {
 		}
 	}
 	return itoa(a)
+}
+
+func problem73() string {
+	const max = 12000
+	count := 0
+	for d := 4; d <= max; d++ {
+		s, f := int(math.Ceil(float64(d)/3.0)), d/2
+		for n := s; n <= f; n++ {
+			if gcd(n,d) == 1 { count++ } 
+		}
+	}
+	return itoa(count)
 }
 
 func problem74() string {
