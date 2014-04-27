@@ -1,2 +1,2 @@
 @echo off
-go install && ..\..\..\..\bin\go-euler.exe %*
+go install && %GOPATH%\bin\go-euler.exe %*
