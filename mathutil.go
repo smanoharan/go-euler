@@ -1,8 +1,8 @@
 package main
 
 import (
-	"strconv"
 	"math"
+	"strconv"
 )
 
 // TODO write mathutil_386.s
@@ -37,12 +37,14 @@ func Max3ul(i, j, k uint64) uint64 {
 }
 
 func Max2l(i, j int64) int64 {
-	if i < j { 	return j }
+	if i < j {
+		return j
+	}
 	return i
 }
 
 func itoa(i int) string {
-	return strconv.Itoa(i) 
+	return strconv.Itoa(i)
 }
 
 func atoi(s string) int {
@@ -63,7 +65,7 @@ func SqrtU64(i uint64) uint64 {
 }
 
 func PowI64(base, exp int64) int64 {
-	return int64(math.Pow(float64(base), float64(exp))) 
+	return int64(math.Pow(float64(base), float64(exp)))
 }
 
 func logn(x float64) float64 {
@@ -75,3 +77,9 @@ func logExp(base, exp int) float64 {
 	return float64(exp) * logn(float64(base))
 }
 
+func abs(i int64) int64 {
+	if i < 0 {
+		i *= -1
+	}
+	return i
+}
